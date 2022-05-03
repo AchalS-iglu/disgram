@@ -1,3 +1,5 @@
 venv/
 .env
 credentials.json
+cogs/_pycache__
+cogs/__pycache__/dstories.cpython-310.pyc
