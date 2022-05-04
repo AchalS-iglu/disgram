@@ -1,3 +1,5 @@
+from sqlite3 import SQLITE_ALTER_TABLE
+import sqlite3
 import discord
 from discord.ext import commands, tasks
 
@@ -30,6 +32,8 @@ class MyBot(commands.Bot):
             await self.load_extension(ext)
 
     async def close(self):
+        bot.conn.close()
+        bot.dblog.close()
         await super().close()
         await self.session.close()
 
@@ -38,7 +42,10 @@ class MyBot(commands.Bot):
         print('Running background task...')
 
     async def on_ready(self):
-        print('Ready!')
+        bot.igclient = igclient
+        bot.conn = sqlite3.connect('data/db.sqlite3')
+        bot.cur = bot.conn.cursor()
+        bot.dblog = open('data/dblog.log', 'a')
 
 bot = MyBot()
 
@@ -49,3 +56,11 @@ async def sync(ctx):
     await ctx.reply("Synced")
     
 bot.run(os.getenv('BOT_TOKEN'))
+
+
+"""
+SELECT  "user",  "channel", SUBSTR("posts_sent", 1, 256), SUBSTR("stories_sent", 1, 256) FROM "db"."guildex" LIMIT 1000;
+SELECT  "user",  "channel", SUBSTR("posts_sent", 1, 256), SUBSTR("stories_sent", 1, 256) FROM "db"."guildex" ORDER BY "user" ASC LIMIT 1000;
+SELECT  "user",  "channel", SUBSTR("posts_sent", 1, 256), SUBSTR("stories_sent", 1, 256) FROM "db"."guildex" ORDER BY "user" DESC LIMIT 1000;
+INSERT INTO "db"."guildex" ("user", "channel", "posts_sent", "stories_sent") VALUES ('213123', '3213', '31231', '32131');
+SELECT "user", "channel", "posts_sent", "stories_sent" FROM "db"."guildex" WHERE  "user"=213123;"""
