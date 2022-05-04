@@ -46,6 +46,7 @@ class MyBot(commands.Bot):
         bot.conn = sqlite3.connect('data/db.sqlite3')
         bot.cur = bot.conn.cursor()
         bot.dblog = open('data/dblog.log', 'a')
+        print('Ready!')
 
 bot = MyBot()
 
