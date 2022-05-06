@@ -11,11 +11,6 @@ import aiohttp
 
 load_dotenv()
 
-igclient = instagrapi.Client()
-igusername = os.getenv("IG_USER")
-igpassword = os.getenv("IG_PASS")
-igclient.login(username=igusername, password=igpassword)
-
 intents = discord.Intents.default()
 intents.message_content = True
 class MyBot(commands.Bot):
@@ -34,6 +29,7 @@ class MyBot(commands.Bot):
     async def close(self):
         bot.conn.close()
         bot.dblog.close()
+        bot.igclient.logout()
         await super().close()
         await self.session.close()
 
@@ -42,6 +38,10 @@ class MyBot(commands.Bot):
         print('Running background task...')
 
     async def on_ready(self):
+        igclient = instagrapi.Client()
+        igusername = os.getenv("IG_USER")
+        igpassword = os.getenv("IG_PASS")
+        igclient.login(username=igusername, password=igpassword)
         bot.igclient = igclient
         bot.conn = sqlite3.connect('data/db.sqlite3')
         bot.cur = bot.conn.cursor()
